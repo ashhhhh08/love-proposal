@@ -1,0 +1,46 @@
+<script>
+    let name = "Priya"; // 🔥 Change this to any name you want
+
+    window.onload = function() {
+        document.getElementById("namePage").style.display = "none";
+        document.getElementById("proposalPage").style.display = "block";
+        document.getElementById("proposalText").innerHTML = 
+            name + ", Will You Be Mine? 💍💖";
+
+        createFloating();
+    };
+
+    function moveButton() {
+        var button = document.getElementById("no");
+        button.style.top = Math.random() * window.innerHeight + "px";
+        button.style.left = Math.random() * window.innerWidth + "px";
+    }
+
+    function accepted() {
+        showResult("Yayyy " + name + " ❤️ I Love You So Much 💍✨");
+    }
+
+    function rejected() {
+        showResult("Oh no " + name + " 😢 I'll try again! 💔");
+    }
+
+    function showResult(message) {
+        document.getElementById("proposalPage").style.display = "none";
+        document.getElementById("resultPage").style.display = "block";
+        document.getElementById("resultText").innerHTML = message;
+    }
+
+    function createFloating() {
+        const symbols = ["💖","⭐","💘","✨"];
+        setInterval(function() {
+            var elem = document.createElement("div");
+            elem.className = "floating";
+            elem.style.left = Math.random() * 100 + "vw";
+            elem.innerHTML = symbols[Math.floor(Math.random() * symbols.length)];
+            document.body.appendChild(elem);
+            setTimeout(() => elem.remove(), 6000);
+        }, 500);
+    }
+
+    document.getElementById("no").onclick = rejected;
+</script>
