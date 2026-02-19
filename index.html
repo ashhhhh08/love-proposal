@@ -29,47 +29,57 @@ body {
     position: relative;
     backdrop-filter: blur(15px);
     background: rgba(255,255,255,0.15);
-    padding: 60px;
+    padding: 40px;
     border-radius: 20px;
     text-align: center;
     box-shadow: 0 0 40px rgba(255,255,255,0.4);
-    width: 500px;
+    width: 90%;
+    max-width: 500px;
     transition: all 0.6s ease;
 }
 
 h1 {
     color: white;
-    font-size: 32px;
+    font-size: 26px;
+}
+
+input {
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    font-size: 18px;
+    width: 80%;
+    margin-top: 15px;
 }
 
 button {
-    padding: 15px 35px;
-    font-size: 20px;
+    padding: 12px 25px;
+    font-size: 18px;
     border-radius: 12px;
     border: none;
     cursor: pointer;
-    margin: 20px;
+    margin: 15px;
     transition: transform 0.3s ease;
 }
 
 #yes {
     background: #00c853;
     color: white;
-    z-index: 2;
     position: relative;
+    z-index: 2;
 }
 
 #no {
     background: #ff1744;
     color: white;
     position: absolute;
-    transition: all 0.3s ease;
     z-index: 1;
+    transition: all 0.3s ease;
 }
 
 img {
     margin-top: 20px;
-    width: 250px;
+    width: 220px;
     border-radius: 15px;
     box-shadow: 0 0 20px rgba(255,255,255,0.6);
     animation: fadeIn 1s ease;
@@ -79,15 +89,39 @@ img {
     from { opacity: 0; transform: scale(0.8); }
     to { opacity: 1; transform: scale(1); }
 }
+
+.heart {
+    position: fixed;
+    font-size: 24px;
+    animation: floatUp 3s linear infinite;
+}
+
+@keyframes floatUp {
+    from { transform: translateY(100vh); opacity: 1; }
+    to { transform: translateY(-10vh); opacity: 0; }
+}
 </style>
 </head>
 
 <body>
 
 <div class="container" id="box">
-    <h1>Shakthi, Will You Be Mine? 💍💖</h1>
-    <button id="yes">Yes 💘</button>
-    <button id="no">No 😜</button>
+
+    <!-- Name Input Section -->
+    <div id="nameSection">
+        <h1>Enter Her Name 💖</h1>
+        <input type="text" id="nameInput" placeholder="Type her name...">
+        <br>
+        <button onclick="startProposal()">Start 💘</button>
+    </div>
+
+    <!-- Proposal Section -->
+    <div id="proposalSection" style="display:none;">
+        <h1 id="proposalText"></h1>
+        <button id="yes">Yes 💘</button>
+        <button id="no">No 😜</button>
+    </div>
+
 </div>
 
 <script>
@@ -99,11 +133,26 @@ const box = document.getElementById("box");
 let yesScale = 1;
 let hiddenBehind = false;
 
-/* Initial position */
-noBtn.style.left = "60%";
-noBtn.style.top = "65%";
+/* Start Proposal */
+function startProposal() {
+    let girlName = document.getElementById("nameInput").value;
 
-/* Cursor detection */
+    if(girlName.trim() === "") {
+        alert("Please enter her name 💖");
+        return;
+    }
+
+    document.getElementById("proposalText").innerText =
+        girlName + ", Will You Be Mine? 💍💖";
+
+    document.getElementById("nameSection").style.display = "none";
+    document.getElementById("proposalSection").style.display = "block";
+
+    noBtn.style.left = "60%";
+    noBtn.style.top = "65%";
+}
+
+/* Mouse move detection */
 box.addEventListener("mousemove", function(e) {
 
     if(hiddenBehind) return;
@@ -118,17 +167,15 @@ box.addEventListener("mousemove", function(e) {
         yesScale += 0.05;
         yesBtn.style.transform = "scale(" + yesScale + ")";
 
-        /* After small growth → hide No behind Yes */
         if(yesScale > 1.3) {
             hideNoBehindYes();
-        }
-        else {
+        } else {
             moveSlightlyAway(dx, dy);
         }
     }
 });
 
-/* Slight movement */
+/* Move No Button */
 function moveSlightlyAway(dx, dy) {
 
     let moveX = -dx * 0.3;
@@ -146,6 +193,7 @@ function moveSlightlyAway(dx, dy) {
 
 /* Hide No behind Yes */
 function hideNoBehindYes() {
+
     const yesRect = yesBtn.getBoundingClientRect();
     const boxRect = box.getBoundingClientRect();
 
@@ -156,21 +204,36 @@ function hideNoBehindYes() {
     hiddenBehind = true;
 }
 
-/* Clicking Yes → New page content */
+/* Yes Click Celebration */
 yesBtn.onclick = function() {
 
     box.innerHTML = `
         <h1>Yayyy ❤️ Forever Starts Now 💍✨</h1>
-        <p style="color:white; font-size:18px;">
-            This is just the beginning of something beautiful. <br>
-            More laughs, more memories, more love 💖
+        <p style="color:white;">
+            This is just the beginning of something beautiful 💖
         </p>
-        <img src="https://images.unsplash.com/photo-1518199266791-5375a83190b7" alt="Love Image">
-        <p style="color:white; margin-top:15px;">
-            You just unlocked Level 1 of our love story 😌
-        </p>
+        <img src="https://images.unsplash.com/photo-1518199266791-5375a83190b7">
+        <p style="color:white;">You unlocked Level 1 of our love story 😌</p>
     `;
+
+    createHearts();
 };
+
+/* Floating Hearts */
+function createHearts() {
+    setInterval(() => {
+        let heart = document.createElement("div");
+        heart.className = "heart";
+        heart.innerHTML = "💖";
+        heart.style.left = Math.random() * 100 + "vw";
+        heart.style.animationDuration = (2 + Math.random() * 3) + "s";
+        document.body.appendChild(heart);
+
+        setTimeout(() => {
+            heart.remove();
+        }, 3000);
+    }, 300);
+}
 
 </script>
 
