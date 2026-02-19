@@ -1,132 +1,177 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Special Proposal 💖</title>
-    <style>
-        body {
-            margin: 0;
-            text-align: center;
-            font-family: Arial, sans-serif;
-            background: linear-gradient(to right, #ff758c, #ff7eb3);
-            overflow: hidden;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Special Proposal 💖</title>
 
-        h1 {
-            margin-top: 100px;
-            font-size: 40px;
-            color: white;
-        }
+<style>
+body {
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(-45deg, #ff758c, #ff7eb3, #ff0844);
+    background-size: 300% 300%;
+    animation: gradient 8s ease infinite;
+    overflow: hidden;
+}
 
-        input {
-            padding: 12px;
-            font-size: 18px;
-            border-radius: 8px;
-            border: none;
-        }
+@keyframes gradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
 
-        button {
-            padding: 15px 30px;
-            font-size: 20px;
-            border-radius: 10px;
-            border: none;
-            cursor: pointer;
-            margin: 15px;
-        }
+.container {
+    position: relative;
+    backdrop-filter: blur(15px);
+    background: rgba(255,255,255,0.15);
+    padding: 60px;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 0 40px rgba(255,255,255,0.4);
+    width: 500px;
+    transition: all 0.6s ease;
+}
 
-        #yes {
-            background-color: green;
-            color: white;
-        }
+h1 {
+    color: white;
+    font-size: 32px;
+}
 
-        #no {
-            background-color: red;
-            color: white;
-            position: absolute;
-        }
+button {
+    padding: 15px 35px;
+    font-size: 20px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    margin: 20px;
+    transition: transform 0.3s ease;
+}
 
-        .floating {
-            position: absolute;
-            animation: float 6s linear infinite;
-            font-size: 30px;
-        }
+#yes {
+    background: #00c853;
+    color: white;
+    z-index: 2;
+    position: relative;
+}
 
-        @keyframes float {
-            from { transform: translateY(100vh); }
-            to { transform: translateY(-10vh); }
-        }
-    </style>
+#no {
+    background: #ff1744;
+    color: white;
+    position: absolute;
+    transition: all 0.3s ease;
+    z-index: 1;
+}
+
+img {
+    margin-top: 20px;
+    width: 250px;
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(255,255,255,0.6);
+    animation: fadeIn 1s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.8); }
+    to { opacity: 1; transform: scale(1); }
+}
+</style>
 </head>
 
 <body>
 
-    <div id="namePage">
-        <h1>💖 Enter Your Name 💖</h1>
-        <input type="text" id="username" placeholder="Your Name">
-        <br><br>
-        <button onclick="startProposal()">Continue 💘</button>
-    </div>
-
-    <div id="proposalPage" style="display:none;">
-        <h1 id="proposalText"></h1>
-        <button id="yes" onclick="accepted()">Yes 💘</button>
-        <button id="no" onmouseover="moveButton()">No 😜</button>
-    </div>
-
-    <div id="resultPage" style="display:none;">
-        <h1 id="resultText"></h1>
-    </div>
+<div class="container" id="box">
+    <h1>Shakthi, Will You Be Mine? 💍💖</h1>
+    <button id="yes">Yes 💘</button>
+    <button id="no">No 😜</button>
+</div>
 
 <script>
-    let name = "";
 
-    function startProposal() {
-        name = document.getElementById("username").value;
-        if(name.trim() === "") {
-            alert("Please enter your name 💕");
-            return;
+const yesBtn = document.getElementById("yes");
+const noBtn = document.getElementById("no");
+const box = document.getElementById("box");
+
+let yesScale = 1;
+let hiddenBehind = false;
+
+/* Initial position */
+noBtn.style.left = "60%";
+noBtn.style.top = "65%";
+
+/* Cursor detection */
+box.addEventListener("mousemove", function(e) {
+
+    if(hiddenBehind) return;
+
+    const rect = noBtn.getBoundingClientRect();
+    const dx = e.clientX - (rect.left + rect.width/2);
+    const dy = e.clientY - (rect.top + rect.height/2);
+    const distance = Math.sqrt(dx*dx + dy*dy);
+
+    if(distance < 120) {
+
+        yesScale += 0.05;
+        yesBtn.style.transform = "scale(" + yesScale + ")";
+
+        /* After small growth → hide No behind Yes */
+        if(yesScale > 1.3) {
+            hideNoBehindYes();
         }
-
-        document.getElementById("namePage").style.display = "none";
-        document.getElementById("proposalPage").style.display = "block";
-        document.getElementById("proposalText").innerHTML = 
-            name + ", Will You Be Mine? 💍💖";
-
-        createFloating();
+        else {
+            moveSlightlyAway(dx, dy);
+        }
     }
+});
 
-    function moveButton() {
-        var button = document.getElementById("no");
-        button.style.top = Math.random() * window.innerHeight + "px";
-        button.style.left = Math.random() * window.innerWidth + "px";
-    }
+/* Slight movement */
+function moveSlightlyAway(dx, dy) {
 
-    function accepted() {
-        showResult("Yayyy " + name + " ❤️ I Love You So Much 💍✨");
-    }
+    let moveX = -dx * 0.3;
+    let moveY = -dy * 0.3;
 
-    function rejected() {
-        showResult("Oh no " + name + " 😢 I'll try again! 💔");
-    }
+    let newLeft = noBtn.offsetLeft + moveX;
+    let newTop = noBtn.offsetTop + moveY;
 
-    function showResult(message) {
-        document.getElementById("proposalPage").style.display = "none";
-        document.getElementById("resultPage").style.display = "block";
-        document.getElementById("resultText").innerHTML = message;
-    }
+    newLeft = Math.max(0, Math.min(newLeft, box.clientWidth - noBtn.offsetWidth));
+    newTop = Math.max(0, Math.min(newTop, box.clientHeight - noBtn.offsetHeight));
 
-    function createFloating() {
-        const symbols = ["💖","⭐","💘","✨"];
-        setInterval(function() {
-            var elem = document.createElement("div");
-            elem.className = "floating";
-            elem.style.left = Math.random() * 100 + "vw";
-            elem.innerHTML = symbols[Math.floor(Math.random() * symbols.length)];
-            document.body.appendChild(elem);
-            setTimeout(() => elem.remove(), 6000);
-        }, 500);
-    }
+    noBtn.style.left = newLeft + "px";
+    noBtn.style.top = newTop + "px";
+}
 
-    document.getElementById("no").onclick = rejected;
+/* Hide No behind Yes */
+function hideNoBehindYes() {
+    const yesRect = yesBtn.getBoundingClientRect();
+    const boxRect = box.getBoundingClientRect();
+
+    noBtn.style.left = (yesRect.left - boxRect.left + 10) + "px";
+    noBtn.style.top = (yesRect.top - boxRect.top + 10) + "px";
+    noBtn.style.opacity = "0.6";
+
+    hiddenBehind = true;
+}
+
+/* Clicking Yes → New page content */
+yesBtn.onclick = function() {
+
+    box.innerHTML = `
+        <h1>Yayyy ❤️ Forever Starts Now 💍✨</h1>
+        <p style="color:white; font-size:18px;">
+            This is just the beginning of something beautiful. <br>
+            More laughs, more memories, more love 💖
+        </p>
+        <img src="https://images.unsplash.com/photo-1518199266791-5375a83190b7" alt="Love Image">
+        <p style="color:white; margin-top:15px;">
+            You just unlocked Level 1 of our love story 😌
+        </p>
+    `;
+};
+
 </script>
 
 </body>
